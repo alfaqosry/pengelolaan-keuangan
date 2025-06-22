@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "421661021556",
+    "project_id": "ada-keuangan",
+    "storage_bucket": "ada-keuangan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:421661021556:android:84ede0c01357319d1dc821",
+        "android_client_info": {
+          "package_name": "com.adam.keuangan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjsXy4hDnX8eREv9eMECD5L9Y2POM76v4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
