@@ -1,23 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 class SignupController extends GetxController {
-  //TODO: Implement SignupController
+  TextEditingController emailC = TextEditingController();
+  TextEditingController passC = TextEditingController();
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
+  var obscurePassword = true.obs;
+  var isLoading = false.obs;
+  void togglePasswordVisibility() {
+    obscurePassword.value = !obscurePassword.value;
   }
 
   @override
   void onClose() {
+    emailC.dispose();
+    passC.dispose();
     super.onClose();
   }
-
-  void increment() => count.value++;
 }

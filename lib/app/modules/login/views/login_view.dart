@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:keuangan/app/controllers/auth_controller.dart';
+import 'package:keuangan/app/routes/app_pages.dart';
 
 import '../controllers/login_controller.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +10,6 @@ import 'package:get/get.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
-  final emailC = TextEditingController();
-  final passC = TextEditingController();
-
   final authC = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
@@ -29,7 +27,7 @@ class LoginView extends GetView<LoginController> {
               ),
               SizedBox(height: 16),
               TextField(
-                controller: emailC,
+                controller: controller.emailC,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: "Email",
@@ -50,7 +48,7 @@ class LoginView extends GetView<LoginController> {
               // Password TextField with Obx
               Obx(
                 () => TextField(
-                  controller: passC,
+                  controller: controller.passC,
                   obscureText: controller.obscurePassword.value,
                   decoration: InputDecoration(
                     hintText: 'Password',
@@ -79,7 +77,10 @@ class LoginView extends GetView<LoginController> {
               SizedBox(
                 width: double.infinity, // Tombol melebar penuh
                 child: ElevatedButton(
-                  onPressed: () => authC.login(emailC.text, passC.text),
+                  onPressed: () => authC.login(
+                    controller.emailC.text,
+                    controller.passC.text,
+                  ),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 40,
@@ -99,6 +100,16 @@ class LoginView extends GetView<LoginController> {
                     ),
                   ),
                 ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Belum memiliki akun?'),
+                  TextButton(
+                    onPressed: () => Get.toNamed(Routes.SIGNUP),
+                    child: Text("Daftar"),
+                  ),
+                ],
               ),
             ],
           ),

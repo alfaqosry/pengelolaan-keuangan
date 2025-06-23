@@ -14,9 +14,18 @@ class AuthController extends GetxController {
   void login(String email, String password) async {
     print(email);
     try {
-      await auth.signInWithEmailAndPassword(email: email, password: password);
-
-      Get.offAllNamed(Routes.HOME);
+      UserCredential myUser = await auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (myUser.user!.emailVerified) {
+        Get.offAllNamed(Routes.HOME);
+      } else {
+        Get.defaultDialog(
+          title: "Verifikasi Email",
+          middleText: "Kamu perlu verifikasi email dulu",
+        );
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -31,5 +40,31 @@ class AuthController extends GetxController {
     Get.offAllNamed(Routes.LOGIN);
   }
 
-  void signup() {}
+  void signup(String email, String password) async {
+    try {
+      UserCredential myUser = await auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (myUser.user!.emailVerified) {
+        Get.offAllNamed(Routes.HOME);
+      } else {
+        await myUser.user?.sendEmailVerification();
+        Get.defaultDialog(
+          title: "Verifikasi Email",
+          middleText: "Kami telah mengirimkan email verifikasi",
+          onConfirm: () {
+            Get.back();
+            Get.back();
+          },
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    }
+  }
 }
