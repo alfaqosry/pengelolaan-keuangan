@@ -1,14 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:keuangan/app/routes/app_pages.dart';
 
 class AuthController extends GetxController {
-  // FirebaseAuth auth = FirebaseAuth.instance.authStateChanges();
-  // Stream<User?> streameAuthStatus() {
-  //   return auth.authStateChanges();
-  // }
-
   FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseFirestore fireStore = FirebaseFirestore.instance;
+
   Stream<User?> get streameAuthStatus => auth.authStateChanges();
 
   void login(String email, String password) async {
@@ -18,8 +16,44 @@ class AuthController extends GetxController {
         email: email,
         password: password,
       );
-      if (myUser.user!.emailVerified) {
-        Get.offAllNamed(Routes.HOME);
+
+      User? datauser = myUser.user;
+      await datauser?.reload();
+
+      if (datauser != null && datauser.emailVerified) {
+        try {
+          DocumentSnapshot userDoc = await fireStore
+              .collection('users')
+              .doc(datauser.uid)
+              .get();
+
+          // Buat dokumen jika belum ada
+          if (!userDoc.exists) {
+            await fireStore.collection('users').doc(datauser.uid).set({
+              'email': datauser.email,
+              'tinggal': null,
+              'created_at': DateTime.now().toIso8601String(),
+            });
+          }
+
+          // Ambil data user dan cek field "tinggal"
+          final data = userDoc.data() as Map<String, dynamic>?;
+          final bool belumIsiProfil = data == null || data['tinggal'] == null;
+
+          print("cek boy: $belumIsiProfil");
+
+          if (belumIsiProfil) {
+            Get.offAllNamed(Routes.ISI_PROFILE);
+          } else {
+            Get.offAllNamed(Routes.HOME);
+          }
+        } catch (e) {
+          print("Firestore error: $e");
+          Get.defaultDialog(
+            title: "Kesalahan",
+            middleText: "Gagal mengambil data profil. Periksa koneksi kamu.",
+          );
+        }
       } else {
         Get.defaultDialog(
           title: "Verifikasi Email",
@@ -27,11 +61,10 @@ class AuthController extends GetxController {
         );
       }
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
+      Get.defaultDialog(
+        title: "Login Gagal",
+        middleText: e.message ?? "Terjadi kesalahan",
+      );
     }
   }
 
@@ -40,31 +73,57 @@ class AuthController extends GetxController {
     Get.offAllNamed(Routes.LOGIN);
   }
 
-  void signup(String email, String password) async {
+  void signup(String name, String email, String password) async {
     try {
       UserCredential myUser = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      if (myUser.user!.emailVerified) {
-        Get.offAllNamed(Routes.HOME);
-      } else {
-        await myUser.user?.sendEmailVerification();
-        Get.defaultDialog(
-          title: "Verifikasi Email",
-          middleText: "Kami telah mengirimkan email verifikasi",
-          onConfirm: () {
-            Get.back();
-            Get.back();
-          },
-        );
-      }
+
+      await myUser.user?.updateDisplayName(name);
+      await myUser.user?.reload();
+
+      await fireStore.collection('users').doc(myUser.user!.uid).set({
+        'email': email,
+        'displayName': name,
+        'tinggal': null,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      await myUser.user?.sendEmailVerification();
+      Get.defaultDialog(
+        title: "Verifikasi Email",
+        middleText: "Kami telah mengirimkan email verifikasi ke $email",
+        onConfirm: () {
+          Get.back();
+          Get.back();
+        },
+      );
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+      Get.defaultDialog(
+        title: "Registrasi Gagal",
+        middleText: e.message ?? "Terjadi kesalahan saat mendaftar",
+      );
+    }
+  }
+
+  Future<String> determineStartRoute(User user) async {
+    try {
+      final doc = await fireStore.collection('users').doc(user.uid).get();
+
+      // Jika dokumen tidak ada, atau field 'tinggal' belum diisi
+      final data = doc.data() as Map<String, dynamic>?;
+
+      final bool belumIsiProfil = data == null || data['tinggal'] == null;
+
+      if (belumIsiProfil) {
+        return Routes.ISI_PROFILE;
+      } else {
+        return Routes.HOME;
       }
+    } catch (e) {
+      print("Error cek Firestore: $e");
+      return Routes.LOGIN; // fallback kalau error
     }
   }
 }

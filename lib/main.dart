@@ -15,23 +15,43 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final authC = Get.put(AuthController(), permanent: true);
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: authC.streameAuthStatus,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          print(snapshot.data);
+          final user = snapshot.data;
+
+          if (user != null && user.emailVerified) {
+            // Cek apakah profil lengkap
+            return FutureBuilder<String>(
+              future: authC.determineStartRoute(user),
+              builder: (context, routeSnapshot) {
+                if (routeSnapshot.connectionState == ConnectionState.done) {
+                  return GetMaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    title: "Application",
+                    initialRoute: routeSnapshot.data!,
+                    getPages: AppPages.routes,
+                  );
+                }
+                return LoadingView();
+              },
+            );
+          }
+
+          // User belum login atau belum verifikasi email
           return GetMaterialApp(
             title: "Application",
-            initialRoute:
-                snapshot.data != null && snapshot.data!.emailVerified == true
-                ? Routes.HOME
-                : Routes.LOGIN,
+            debugShowCheckedModeBanner: false,
+            initialRoute: Routes.LOGIN,
             getPages: AppPages.routes,
           );
         }
 
+        // Masih loading
         return LoadingView();
       },
     );

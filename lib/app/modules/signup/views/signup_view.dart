@@ -12,7 +12,6 @@ class SignupView extends GetView<SignupController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('SignupView'), centerTitle: true),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -22,6 +21,23 @@ class SignupView extends GetView<SignupController> {
               Text(
                 'SignUp',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: controller.nameC,
+                decoration: InputDecoration(
+                  hintText: "Nama",
+                  prefixIcon: Icon(Icons.people),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
               ),
               SizedBox(height: 16),
               TextField(
@@ -76,6 +92,7 @@ class SignupView extends GetView<SignupController> {
                 width: double.infinity, // Tombol melebar penuh
                 child: ElevatedButton(
                   onPressed: () => authC.signup(
+                    controller.nameC.text,
                     controller.emailC.text,
                     controller.passC.text,
                   ),
@@ -101,6 +118,7 @@ class SignupView extends GetView<SignupController> {
               ),
 
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Suda memiliki akun?'),
                   TextButton(

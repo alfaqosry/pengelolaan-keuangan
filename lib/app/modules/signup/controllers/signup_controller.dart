@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 class SignupController extends GetxController {
   TextEditingController emailC = TextEditingController();
+  TextEditingController nameC = TextEditingController();
   TextEditingController passC = TextEditingController();
 
   var obscurePassword = true.obs;
@@ -15,6 +16,7 @@ class SignupController extends GetxController {
   void onClose() {
     emailC.dispose();
     passC.dispose();
+    nameC.dispose();
     super.onClose();
   }
 }
