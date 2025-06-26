@@ -69,7 +69,9 @@ class _WizardPertanyaanPageState extends State<WizardPertanyaanPage> {
           content: Text("Terima kasih sudah mengisi semua pertanyaan."),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Get.back();
+              },
               child: Text("Tutup"),
             ),
           ],
