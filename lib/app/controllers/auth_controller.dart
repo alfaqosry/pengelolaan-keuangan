@@ -49,10 +49,6 @@ class AuthController extends GetxController {
           }
         } catch (e) {
           print("Firestore error: $e");
-          Get.defaultDialog(
-            title: "Kesalahan",
-            middleText: "Gagal mengambil data profil. Periksa koneksi kamu.",
-          );
         }
       } else {
         Get.defaultDialog(
