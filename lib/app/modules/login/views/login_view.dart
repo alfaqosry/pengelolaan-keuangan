@@ -5,9 +5,6 @@ import 'package:keuangan/app/controllers/auth_controller.dart';
 import 'package:keuangan/app/routes/app_pages.dart';
 
 import '../controllers/login_controller.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
   final authC = Get.find<AuthController>();

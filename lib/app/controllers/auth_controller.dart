@@ -107,15 +107,24 @@ class AuthController extends GetxController {
     try {
       final doc = await fireStore.collection('users').doc(user.uid).get();
 
-      // Jika dokumen tidak ada, atau field 'tinggal' belum diisi
-      final data = doc.data() as Map<String, dynamic>?;
-
-      final bool belumIsiProfil = data == null || data['tinggal'] == null;
-
-      if (belumIsiProfil) {
+      // Cek apakah user doc ada
+      if (!doc.exists) {
         return Routes.ISI_PROFILE;
+      }
+
+      // Cek apakah user sudah punya isian di subcollection 'jawaban_user'
+      final jawabanSnapshot = await fireStore
+          .collection('users')
+          .doc(user.uid)
+          .collection('jawaban_user')
+          .get();
+
+      final sudahIsiProfil = jawabanSnapshot.docs.isNotEmpty;
+
+      if (sudahIsiProfil) {
+        return Routes.HOME; // Dashboard
       } else {
-        return Routes.HOME;
+        return Routes.ISI_PROFILE;
       }
     } catch (e) {
       print("Error cek Firestore: $e");

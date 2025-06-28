@@ -1,106 +1,117 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-import 'package:keuangan/app/controllers/auth_controller.dart';
-
 import '../controllers/isi_profile_controller.dart';
 
 class IsiProfileView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(home: WizardPertanyaanPage());
-  }
-}
-
-class Pertanyaan {
-  final String teks;
-  final String? pertanyaanTambahan;
-
-  Pertanyaan({required this.teks, this.pertanyaanTambahan});
-
-  bool get punyaPertanyaanTambahan => pertanyaanTambahan != null;
-}
-
-class WizardPertanyaanPage extends StatefulWidget {
-  @override
-  State<WizardPertanyaanPage> createState() => _WizardPertanyaanPageState();
-}
-
-class _WizardPertanyaanPageState extends State<WizardPertanyaanPage> {
-  int currentIndex = 0;
-
-  final List<Pertanyaan> pertanyaanList = [
-    Pertanyaan(
-      teks: 'Apakah kamu tinggal di kos?',
-      pertanyaanTambahan: 'Berapa biaya kos Anda per bulan?',
-    ),
-    Pertanyaan(
-      teks: 'Apakah kamu bekerja sambil kuliah?',
-      pertanyaanTambahan: 'Berapa penghasilan Anda per bulan?',
-    ),
-    Pertanyaan(teks: 'Apakah kamu menerima uang saku dari orang tua?'),
-    Pertanyaan(teks: 'Apakah kamu memiliki tabungan pribadi?'),
-  ];
-
-  Map<int, bool?> jawabanYaTidak = {}; // jawaban Ya/Tidak
-  Map<int, String?> jawabanTambahan = {}; // jawaban tambahan
-
+  final controller = Get.put(IsiProfileController());
   final TextEditingController inputTambahanController = TextEditingController();
 
-  void next() {
-    // simpan input tambahan jika perlu
-    if (isJawabYaDanPerluIsiTambahan()) {
-      jawabanTambahan[currentIndex] = inputTambahanController.text.trim();
-      inputTambahanController.clear();
-    }
-
-    if (currentIndex < pertanyaanList.length - 1) {
-      setState(() {
-        currentIndex++;
-      });
-    } else {
-      // Selesai
-      print('Jawaban Ya/Tidak: $jawabanYaTidak');
-      print('Jawaban Tambahan: $jawabanTambahan');
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text("Selesai!"),
-          content: Text("Terima kasih sudah mengisi semua pertanyaan."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Get.back();
-              },
-              child: Text("Tutup"),
-            ),
-          ],
-        ),
-      );
-    }
+  bool isJawabYaDanPerluIsiTambahan(int index) {
+    var data = controller.pertanyaanList[index];
+    return controller.jawabanYaTidak[index] == true &&
+        data.containsKey('tambahan');
   }
 
-  void back() {
-    if (currentIndex > 0) {
-      setState(() {
-        currentIndex--;
-        inputTambahanController.text = jawabanTambahan[currentIndex] ?? '';
-      });
-    }
+  bool isNextEnabled(int index) {
+    final jawab = controller.jawabanYaTidak[index];
+    if (jawab == null) return false;
+    if (!isJawabYaDanPerluIsiTambahan(index)) return true;
+    return inputTambahanController.text.trim().isNotEmpty;
   }
 
-  Widget buildOptionButton(String label, bool value) {
-    bool isSelected = jawabanYaTidak[currentIndex] == value;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Wizard Pertanyaan')),
+      body: Obx(() {
+        int index = controller.currentIndex.value;
+        bool isLast = index == controller.pertanyaanList.length - 1;
+        var pertanyaan = controller.pertanyaanList[index];
+
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              Text(
+                'Pertanyaan ${index + 1} dari ${controller.pertanyaanList.length}',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+              SizedBox(height: 20),
+              Text(
+                pertanyaan['teks']!,
+                style: TextStyle(fontSize: 22),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 30),
+              Row(
+                children: [
+                  buildOptionButton(index, "Ya", true),
+                  SizedBox(width: 10),
+                  buildOptionButton(index, "Tidak", false),
+                ],
+              ),
+              if (isJawabYaDanPerluIsiTambahan(index)) ...[
+                SizedBox(height: 20),
+                TextField(
+                  controller: inputTambahanController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => controller.currentIndex.refresh(),
+                  decoration: InputDecoration(
+                    labelText: pertanyaan['tambahan'],
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
+              Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: index > 0
+                        ? () {
+                            controller.currentIndex.value--;
+                            inputTambahanController.text =
+                                controller.jawabanTambahan[index - 1] ?? '';
+                          }
+                        : null,
+                    child: Text('Back'),
+                  ),
+                  ElevatedButton(
+                    onPressed: isNextEnabled(index)
+                        ? () {
+                            if (isJawabYaDanPerluIsiTambahan(index)) {
+                              controller.jawabanTambahan[index] =
+                                  inputTambahanController.text.trim();
+                              inputTambahanController.clear();
+                            }
+                            if (isLast) {
+                              controller.simpanJawabanKeFirestore();
+                            } else {
+                              controller.currentIndex.value++;
+                            }
+                          }
+                        : null,
+                    child: Text(isLast ? 'Selesai' : 'Next'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget buildOptionButton(int index, String label, bool value) {
+    final isSelected = controller.jawabanYaTidak[index] == value;
     return Expanded(
       child: ElevatedButton(
         onPressed: () {
-          setState(() {
-            jawabanYaTidak[currentIndex] = value;
-            if (!value) {
-              inputTambahanController.clear();
-              jawabanTambahan[currentIndex] = null;
-            }
-          });
+          controller.jawabanYaTidak[index] = value;
+          if (!value) {
+            inputTambahanController.clear();
+            controller.jawabanTambahan[index] = null;
+          }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: isSelected ? Colors.blue : Colors.grey[300],
@@ -108,88 +119,6 @@ class _WizardPertanyaanPageState extends State<WizardPertanyaanPage> {
           padding: EdgeInsets.symmetric(vertical: 16),
         ),
         child: Text(label),
-      ),
-    );
-  }
-
-  bool isJawabYaDanPerluIsiTambahan() {
-    final pertanyaan = pertanyaanList[currentIndex];
-    return jawabanYaTidak[currentIndex] == true &&
-        pertanyaan.punyaPertanyaanTambahan;
-  }
-
-  bool isNextEnabled() {
-    final jawab = jawabanYaTidak[currentIndex];
-    if (jawab == null) return false;
-
-    // Kalau tidak ada pertanyaan tambahan atau jawabnya TIDAK, bisa lanjut
-    if (!isJawabYaDanPerluIsiTambahan()) return true;
-
-    // Kalau ada pertanyaan tambahan dan jawabannya YA, pastikan sudah isi
-    return inputTambahanController.text.trim().isNotEmpty;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final pertanyaan = pertanyaanList[currentIndex];
-    bool isLast = currentIndex == pertanyaanList.length - 1;
-    bool isYa = jawabanYaTidak[currentIndex] == true;
-
-    return Scaffold(
-      appBar: AppBar(title: Text('Wizard Pertanyaan')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            Text(
-              'Pertanyaan ${currentIndex + 1} dari ${pertanyaanList.length}',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            SizedBox(height: 20),
-            Text(
-              pertanyaan.teks,
-              style: TextStyle(fontSize: 22),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 30),
-
-            Row(
-              children: [
-                buildOptionButton("Ya", true),
-                SizedBox(width: 10),
-                buildOptionButton("Tidak", false),
-              ],
-            ),
-
-            if (isJawabYaDanPerluIsiTambahan()) ...[
-              SizedBox(height: 20),
-              TextField(
-                controller: inputTambahanController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: pertanyaan.pertanyaanTambahan!,
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-
-            Spacer(),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: currentIndex > 0 ? back : null,
-                  child: Text('Back'),
-                ),
-                ElevatedButton(
-                  onPressed: isNextEnabled() ? next : null,
-                  child: Text(isLast ? 'Selesai' : 'Next'),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -18,8 +18,13 @@ class HomeView extends GetView<HomeController> {
           IconButton(onPressed: () => authC.logout(), icon: Icon(Icons.logout)),
         ],
       ),
-      body: const Center(
-        child: Text('HomeView is working', style: TextStyle(fontSize: 20)),
+      body: Center(
+        child: Obx(() {
+          final user = controller.namaUser.value;
+          final nama = user ?? 'Pengguna';
+
+          return Text('Selamat datang, $nama', style: TextStyle(fontSize: 20));
+        }),
       ),
     );
   }
