@@ -10,7 +10,6 @@ class AuthController extends GetxController {
   Stream<User?> get streameAuthStatus => auth.authStateChanges();
 
   void login(String email, String password) async {
-    print(email);
     try {
       UserCredential myUser = await auth.signInWithEmailAndPassword(
         email: email,
@@ -21,45 +20,40 @@ class AuthController extends GetxController {
       await datauser?.reload();
 
       if (datauser != null && datauser.emailVerified) {
-        try {
-          DocumentSnapshot userDoc = await fireStore
-              .collection('users')
-              .doc(datauser.uid)
-              .get();
+        DocumentReference userRef = fireStore
+            .collection('users')
+            .doc(datauser.uid);
+        DocumentSnapshot userDoc = await userRef.get();
 
-          // Buat dokumen jika belum ada
-          if (!userDoc.exists) {
-            await fireStore.collection('users').doc(datauser.uid).set({
-              'email': datauser.email,
-              'tinggal': null,
-              'created_at': DateTime.now().toIso8601String(),
-            });
-          }
+        // Buat dokumen jika belum ada
+        if (!userDoc.exists) {
+          await userRef.set({
+            'email': datauser.email,
+            'tinggal': null,
+            'created_at': DateTime.now().toIso8601String(),
+          });
 
-          // Ambil data user dan cek field "tinggal"
-          final data = userDoc.data() as Map<String, dynamic>?;
-          final bool belumIsiProfil = data == null || data['tinggal'] == null;
-
-          print("cek boy: $belumIsiProfil");
-
-          if (belumIsiProfil) {
-            Get.offAllNamed(Routes.ISI_PROFILE);
-          } else {
-            Get.offAllNamed(Routes.HOME);
-          }
-        } catch (e) {
-          print("Firestore error: $e");
+          // Perbarui userDoc setelah dibuat
+          userDoc = await userRef.get();
         }
+
+        // ✅ Setelah proses selesai, biarkan `main.dart` yang arahkan halaman
+        // jadi kita tidak melakukan Get.offAll() apapun di sini
       } else {
         Get.defaultDialog(
           title: "Verifikasi Email",
-          middleText: "Kamu perlu verifikasi email dulu",
+          middleText: "Silakan verifikasi email terlebih dahulu.",
         );
       }
     } on FirebaseAuthException catch (e) {
       Get.defaultDialog(
         title: "Login Gagal",
-        middleText: e.message ?? "Terjadi kesalahan",
+        middleText: e.message ?? "Terjadi kesalahan saat login.",
+      );
+    } catch (e) {
+      Get.defaultDialog(
+        title: "Kesalahan",
+        middleText: "Terjadi kesalahan tidak terduga: $e",
       );
     }
   }
