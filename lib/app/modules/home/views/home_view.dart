@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:keuangan/app/controllers/auth_controller.dart';
+import 'package:keuangan/app/utils/exericase_tile.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -61,10 +62,10 @@ class HomeView extends GetView<HomeController> {
                 children: [
                   Expanded(
                     child: Container(
-                      height: 100,
+                      height: 80,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black12,
@@ -77,7 +78,7 @@ class HomeView extends GetView<HomeController> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           "Pemasukan",
-                          style: TextStyle(color: Colors.green),
+                          style: TextStyle(color: Colors.green, fontSize: 10),
                         ),
                       ),
                     ),
@@ -85,10 +86,10 @@ class HomeView extends GetView<HomeController> {
                   SizedBox(width: 16), // jarak antar card
                   Expanded(
                     child: Container(
-                      height: 100,
+                      height: 80,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black12,
@@ -101,7 +102,34 @@ class HomeView extends GetView<HomeController> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           "Pengeluaran",
-                          style: TextStyle(color: Colors.red),
+                          style: TextStyle(color: Colors.red, fontSize: 10),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  Expanded(
+                    child: Container(
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Selisih",
+                          style: TextStyle(
+                            color: Colors.blue[600],
+                            fontSize: 10,
+                          ),
                         ),
                       ),
                     ),
@@ -112,8 +140,14 @@ class HomeView extends GetView<HomeController> {
 
             Expanded(
               child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  color: Colors.grey[100],
+                ),
                 padding: EdgeInsets.all(25),
-                color: Colors.grey[100],
                 child: Center(
                   child: Column(
                     children: [
@@ -129,6 +163,24 @@ class HomeView extends GetView<HomeController> {
                           ),
                           Icon(Icons.more_horiz),
                         ],
+                      ),
+
+                      SizedBox(height: 20),
+                      Expanded(
+                        child: ListView(
+                          children: [
+                            ExericaseTile(
+                              icon: Icons.arrow_upward,
+                              exerciseName: "Gaji Bulanan",
+                              numberOfExercises: "1000.000",
+                            ),
+                            ExericaseTile(
+                              icon: Icons.arrow_upward,
+                              exerciseName: "Gaji Bulanan",
+                              numberOfExercises: "1000.000",
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
