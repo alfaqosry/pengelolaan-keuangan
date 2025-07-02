@@ -9,6 +9,8 @@ abstract class Routes {
   static const ISI_PROFILE = _Paths.ISI_PROFILE;
   static const PROFILE = _Paths.PROFILE;
   static const LAPORAN = _Paths.LAPORAN;
+  static const CREATE_PENGELUARAN = _Paths.CREATE_PENGELUARAN;
+  static const CREATE_PENDAPATAN = _Paths.CREATE_PENDAPATAN;
 }
 
 abstract class _Paths {
@@ -19,4 +21,6 @@ abstract class _Paths {
   static const ISI_PROFILE = '/isi-profile';
   static const PROFILE = '/profile';
   static const LAPORAN = '/laporan';
+  static const CREATE_PENGELUARAN = '/create-pengeluaran';
+  static const CREATE_PENDAPATAN = '/create-pendapatan';
 }

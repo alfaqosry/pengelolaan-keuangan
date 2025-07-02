@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import 'package:get/get.dart';
 import 'package:keuangan/app/controllers/auth_controller.dart';
+import 'package:keuangan/app/routes/app_pages.dart';
 import 'package:keuangan/app/utils/exericase_tile.dart';
 
 import '../controllers/home_controller.dart';
@@ -13,6 +15,32 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFAEC6CF),
+      floatingActionButton: SpeedDial(
+        icon: Icons.add,
+        activeIcon: Icons.close,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.add_circle, color: Colors.green),
+            backgroundColor: Colors.white,
+            label: 'Tambah Pendapatan',
+            labelStyle: TextStyle(fontSize: 16.0),
+            onTap: () {
+              Get.toNamed(Routes.CREATE_PENDAPATAN);
+            },
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.remove_circle, color: Colors.red),
+            backgroundColor: Colors.white,
+            label: 'Tambah Pengeluaran',
+            labelStyle: TextStyle(fontSize: 16.0),
+            onTap: () {
+              Get.toNamed(Routes.CREATE_PENGELUARAN);
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [

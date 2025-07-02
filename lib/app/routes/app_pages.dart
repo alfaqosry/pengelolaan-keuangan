@@ -1,6 +1,10 @@
 import 'package:get/get.dart';
 
 import '../controllers/navigation_controller.dart';
+import '../modules/create_pendapatan/bindings/create_pendapatan_binding.dart';
+import '../modules/create_pendapatan/views/create_pendapatan_view.dart';
+import '../modules/create_pengeluaran/bindings/create_pengeluaran_binding.dart';
+import '../modules/create_pengeluaran/views/create_pengeluaran_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/controllers/home_controller.dart';
 import '../modules/home/views/home_view.dart';
@@ -56,6 +60,16 @@ class AppPages {
       name: _Paths.LAPORAN,
       page: () => const LaporanView(),
       binding: LaporanBinding(),
+    ),
+    GetPage(
+      name: _Paths.CREATE_PENGELUARAN,
+      page: () => const CreatePengeluaranView(),
+      binding: CreatePengeluaranBinding(),
+    ),
+    GetPage(
+      name: _Paths.CREATE_PENDAPATAN,
+      page: () => const CreatePendapatanView(),
+      binding: CreatePendapatanBinding(),
     ),
   ];
 }
