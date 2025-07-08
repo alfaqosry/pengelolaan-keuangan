@@ -6,6 +6,7 @@ import 'firebase_options.dart';
 import 'app/controllers/auth_controller.dart';
 import 'app/routes/app_pages.dart';
 import 'app/utils/loading.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +56,16 @@ class MyApp extends StatelessWidget {
             title: "Aplikasi Keuangan Mahasiswa",
             initialRoute: Routes.LOGIN,
             getPages: AppPages.routes,
+            theme: ThemeData(
+              textTheme: GoogleFonts.interTextTheme(
+                Theme.of(context).textTheme,
+              ),
+              scaffoldBackgroundColor: Colors.grey[100],
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFFAEC6CF),
+              ),
+              useMaterial3: true,
+            ),
           );
         }
 

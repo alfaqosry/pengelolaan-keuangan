@@ -19,7 +19,7 @@ class HomeView extends GetView<HomeController> {
       floatingActionButton: SpeedDial(
         icon: Icons.add,
         activeIcon: Icons.close,
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF8FAEBB),
         foregroundColor: Colors.white,
         children: [
           SpeedDialChild(
@@ -117,7 +117,7 @@ class HomeView extends GetView<HomeController> {
                             SizedBox(height: 10),
                             Obx(
                               () => Text(
-                                "Rp ${NumberFormat('#,##0', 'id_ID').format(controller.totalPemasukan.value)}",
+                                "Rp ${formatJT(controller.totalPemasukan.value)}",
                               ),
                             ),
                           ],
@@ -125,6 +125,7 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                   ),
+
                   SizedBox(width: 16), // jarak antar card
                   Expanded(
                     child: Container(
@@ -151,7 +152,7 @@ class HomeView extends GetView<HomeController> {
                             SizedBox(height: 10),
                             Obx(
                               () => Text(
-                                "Rp ${NumberFormat('#,##0', 'id_ID').format(controller.totalPengeluaran.value)}",
+                                "Rp ${formatJT(controller.totalPengeluaran.value)}",
                               ),
                             ),
                           ],
@@ -187,9 +188,8 @@ class HomeView extends GetView<HomeController> {
                             ),
                             SizedBox(height: 10),
                             Obx(
-                              () => Text(
-                                "Rp ${NumberFormat('#,##0', 'id_ID').format(controller.saldoAkhir)}",
-                              ),
+                              () =>
+                                  Text("Rp ${formatJT(controller.saldoAkhir)}"),
                             ),
                           ],
                         ),
@@ -256,6 +256,7 @@ class HomeView extends GetView<HomeController> {
                                 exerciseName: item['sumber'] ?? "-",
                                 numberOfExercises:
                                     "${NumberFormat('#,##0', 'id_ID').format(jumlah)}",
+                                tanggalJamKecil: formattedDate,
                               );
                             },
                           ),
@@ -269,14 +270,16 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
       ),
-
-      // body: Center(
-      //   child: Obx(() {
-      //     final user = controller.namaUser.value;
-      //     final nama = user ?? 'Pengguna';
-
-      //     return Text('Selamat datang, $nama', style: TextStyle(fontSize: 20));
-      //   }),
     );
+  }
+
+  String formatJT(int angka) {
+    if (angka >= 1000000) {
+      final jt = (angka / 1000000);
+
+      return '${jt.toStringAsFixed(jt.truncateToDouble() == jt ? 0 : 1)} JT';
+    } else {
+      return NumberFormat('#,##0', 'id_ID').format(angka);
+    }
   }
 }

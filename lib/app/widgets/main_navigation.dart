@@ -25,8 +25,8 @@ class MainNavigation extends StatelessWidget {
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
             BottomNavigationBarItem(
-              icon: Icon(Icons.history),
-              label: 'Riwayat',
+              icon: Icon(Icons.insert_chart),
+              label: 'Laporan',
             ),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
           ],

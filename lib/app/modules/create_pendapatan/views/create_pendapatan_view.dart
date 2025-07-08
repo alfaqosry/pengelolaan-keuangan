@@ -8,6 +8,8 @@ class CreatePendapatanView extends GetView<CreatePendapatanController> {
 
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tambah Pemasukan'),
@@ -18,6 +20,7 @@ class CreatePendapatanView extends GetView<CreatePendapatanController> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
+          key: _formKey, // ← Tambahkan key form
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -73,6 +76,7 @@ class CreatePendapatanView extends GetView<CreatePendapatanController> {
                     ),
                     const SizedBox(height: 12),
 
+                    // Sumber
                     TextFormField(
                       controller: controller.sumberC,
                       decoration: InputDecoration(
@@ -81,22 +85,41 @@ class CreatePendapatanView extends GetView<CreatePendapatanController> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Sumber pemasukan tidak boleh kosong';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 12),
 
+                    // Jumlah
                     TextFormField(
                       controller: controller.jumlahC,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: "Jumlah",
-                        hintText: "Mis 1000.000",
+                        hintText: "Mis. 1000000",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Jumlah tidak boleh kosong';
+                        }
+                        final numValue = num.tryParse(value);
+                        if (numValue == null || numValue <= 0) {
+                          return 'Masukkan jumlah yang valid';
+                        }
+                        return null;
+                      },
                     ),
 
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
+
+                    // Keterangan (opsional)
                     TextFormField(
                       controller: controller.keteranganC,
                       decoration: InputDecoration(
@@ -113,11 +136,14 @@ class CreatePendapatanView extends GetView<CreatePendapatanController> {
 
               const SizedBox(height: 20),
 
+              // Tombol Simpan
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    controller.simpanPendapatan();
+                    if (_formKey.currentState!.validate()) {
+                      controller.simpanPendapatan();
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),

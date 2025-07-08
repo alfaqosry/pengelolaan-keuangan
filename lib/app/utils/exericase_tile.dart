@@ -6,6 +6,7 @@ class ExericaseTile extends StatelessWidget {
   final String numberOfExercises;
   final Color iconColor;
   final Color textColor;
+  final String tanggalJamKecil;
 
   const ExericaseTile({
     super.key,
@@ -14,6 +15,7 @@ class ExericaseTile extends StatelessWidget {
     required this.numberOfExercises,
     required this.iconColor,
     required this.textColor,
+    required this.tanggalJamKecil,
   });
 
   @override
@@ -32,6 +34,11 @@ class ExericaseTile extends StatelessWidget {
           subtitle: Text(
             'Rp. ' + numberOfExercises,
             style: TextStyle(color: textColor),
+          ),
+          trailing: Text(
+            tanggalJamKecil,
+            style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+            textAlign: TextAlign.end,
           ),
         ),
       ),
