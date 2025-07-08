@@ -1,11 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:keuangan/app/controllers/auth_controller.dart';
 import 'package:keuangan/app/routes/app_pages.dart';
 import 'package:keuangan/app/utils/exericase_tile.dart';
-
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -104,9 +105,22 @@ class HomeView extends GetView<HomeController> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Pemasukan",
-                          style: TextStyle(color: Colors.green, fontSize: 10),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Pemasukan",
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 10,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Obx(
+                              () => Text(
+                                "Rp ${NumberFormat('#,##0', 'id_ID').format(controller.totalPemasukan.value)}",
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -128,9 +142,19 @@ class HomeView extends GetView<HomeController> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Pengeluaran",
-                          style: TextStyle(color: Colors.red, fontSize: 10),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Pengeluaran",
+                              style: TextStyle(color: Colors.red, fontSize: 10),
+                            ),
+                            SizedBox(height: 10),
+                            Obx(
+                              () => Text(
+                                "Rp ${NumberFormat('#,##0', 'id_ID').format(controller.totalPengeluaran.value)}",
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -152,12 +176,22 @@ class HomeView extends GetView<HomeController> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Selisih",
-                          style: TextStyle(
-                            color: Colors.blue[600],
-                            fontSize: 10,
-                          ),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Selisih",
+                              style: TextStyle(
+                                color: Colors.blue[600],
+                                fontSize: 10,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Obx(
+                              () => Text(
+                                "Rp ${NumberFormat('#,##0', 'id_ID').format(controller.saldoAkhir)}",
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -183,7 +217,7 @@ class HomeView extends GetView<HomeController> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Statistik",
+                            "Transaksi",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
@@ -194,20 +228,37 @@ class HomeView extends GetView<HomeController> {
                       ),
 
                       SizedBox(height: 20),
-                      Expanded(
-                        child: ListView(
-                          children: [
-                            ExericaseTile(
-                              icon: Icons.arrow_upward,
-                              exerciseName: "Gaji Bulanan",
-                              numberOfExercises: "1000.000",
-                            ),
-                            ExericaseTile(
-                              icon: Icons.arrow_upward,
-                              exerciseName: "Gaji Bulanan",
-                              numberOfExercises: "1000.000",
-                            ),
-                          ],
+                      Obx(
+                        () => Expanded(
+                          child: ListView.builder(
+                            itemCount: controller.semuaData.length,
+
+                            itemBuilder: (context, index) {
+                              final item = controller.semuaData[index];
+                              final tanggal = (item['tanggal_jam'] as Timestamp)
+                                  .toDate();
+                              final isPemasukan = item['jenis'] == 'pemasukan';
+                              final jumlah = (item['jumlah'] ?? 0) as num;
+                              final formattedDate = DateFormat(
+                                'dd MMM yyyy, HH:mm',
+                              ).format(tanggal);
+
+                              return ExericaseTile(
+                                icon: isPemasukan
+                                    ? Icons.arrow_downward
+                                    : Icons.arrow_upward,
+                                iconColor: isPemasukan
+                                    ? Colors.green
+                                    : Colors.red,
+                                textColor: isPemasukan
+                                    ? Colors.green
+                                    : Colors.red,
+                                exerciseName: item['sumber'] ?? "-",
+                                numberOfExercises:
+                                    "${NumberFormat('#,##0', 'id_ID').format(jumlah)}",
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ],
