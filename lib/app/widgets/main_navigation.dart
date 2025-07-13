@@ -10,16 +10,18 @@ import '../controllers/navigation_controller.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/profile/views/profile_view.dart';
 
-class MainNavigation extends StatelessWidget {
-  MainNavigation({super.key}) {
-    // Inject controller saat navigasi dibuat
-    Get.put(NavigationController(), permanent: true);
-    Get.put(AlokasiController(), permanent: true);
-    Get.put(LaporanController(), permanent: true);
-    Get.put(HomeController(), permanent: true);
-  }
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
 
-  final navC = Get.find<NavigationController>(); // cukup pakai Get.find
+  @override
+  State<MainNavigation> createState() => _MainNavigationState();
+}
+
+class _MainNavigationState extends State<MainNavigation> {
+  final navC = Get.put(NavigationController(), permanent: true);
+  final alokasiC = Get.put(AlokasiController(), permanent: true);
+  final laporanC = Get.put(LaporanController(), permanent: true);
+  final homeC = Get.put(HomeController(), permanent: true);
 
   final List<Widget> pages = [
     HomeView(),
@@ -27,6 +29,15 @@ class MainNavigation extends StatelessWidget {
     LaporanView(),
     ProfileView(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // 🟢 Panggil ulang agar ambil data sesuai user login sekarang
+    Future.delayed(Duration.zero, () {
+      alokasiC.listenToAlokasiRealtime();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
