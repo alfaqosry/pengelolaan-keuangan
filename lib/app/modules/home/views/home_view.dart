@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:keuangan/app/controllers/auth_controller.dart';
@@ -27,18 +26,14 @@ class HomeView extends GetView<HomeController> {
             backgroundColor: Colors.white,
             label: 'Tambah Pendapatan',
             labelStyle: TextStyle(fontSize: 16.0),
-            onTap: () {
-              Get.toNamed(Routes.CREATE_PENDAPATAN);
-            },
+            onTap: () => Get.toNamed(Routes.CREATE_PENDAPATAN),
           ),
           SpeedDialChild(
             child: Icon(Icons.remove_circle, color: Colors.red),
             backgroundColor: Colors.white,
             label: 'Tambah Pengeluaran',
             labelStyle: TextStyle(fontSize: 16.0),
-            onTap: () {
-              Get.toNamed(Routes.CREATE_PENGELUARAN);
-            },
+            onTap: () => Get.toNamed(Routes.CREATE_PENGELUARAN),
           ),
         ],
       ),
@@ -46,7 +41,7 @@ class HomeView extends GetView<HomeController> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsetsGeometry.all(16),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
                   CircleAvatar(backgroundColor: Colors.white),
@@ -58,7 +53,7 @@ class HomeView extends GetView<HomeController> {
                         final user = controller.namaUser.value;
                         final nama = user ?? 'Pengguna';
                         return Text(
-                          "Hi,  $nama",
+                          "Hi, $nama",
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -66,7 +61,6 @@ class HomeView extends GetView<HomeController> {
                           ),
                         );
                       }),
-
                       Text(
                         "Selamat Pagi",
                         style: TextStyle(
@@ -89,76 +83,16 @@ class HomeView extends GetView<HomeController> {
               padding: const EdgeInsets.all(10.0),
               child: Row(
                 children: [
-                  Expanded(
-                    child: Container(
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 5,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              "Pemasukan",
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontSize: 10,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Obx(
-                              () => Text(
-                                "Rp ${formatJT(controller.totalPemasukan.value)}",
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  buildSummaryCard(
+                    title: "Pemasukan",
+                    color: Colors.green,
+                    value: controller.totalPemasukan,
                   ),
-
-                  SizedBox(width: 16), // jarak antar card
-                  Expanded(
-                    child: Container(
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 5,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              "Pengeluaran",
-                              style: TextStyle(color: Colors.red, fontSize: 10),
-                            ),
-                            SizedBox(height: 10),
-                            Obx(
-                              () => Text(
-                                "Rp ${formatJT(controller.totalPengeluaran.value)}",
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  SizedBox(width: 16),
+                  buildSummaryCard(
+                    title: "Pengeluaran",
+                    color: Colors.red,
+                    value: controller.totalPengeluaran,
                   ),
                   SizedBox(width: 20),
                   Expanded(
@@ -210,60 +144,79 @@ class HomeView extends GetView<HomeController> {
                   color: Colors.grey[100],
                 ),
                 padding: EdgeInsets.all(25),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Transaksi",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                          Icon(Icons.more_horiz),
-                        ],
-                      ),
-
-                      SizedBox(height: 20),
-                      Obx(
-                        () => Expanded(
-                          child: ListView.builder(
-                            itemCount: controller.semuaData.length,
-
-                            itemBuilder: (context, index) {
-                              final item = controller.semuaData[index];
-                              final tanggal = (item['tanggal_jam'] as Timestamp)
-                                  .toDate();
-                              final isPemasukan = item['jenis'] == 'pemasukan';
-                              final jumlah = (item['jumlah'] ?? 0) as num;
-                              final formattedDate = DateFormat(
-                                'dd MMM yyyy, HH:mm',
-                              ).format(tanggal);
-
-                              return ExericaseTile(
-                                icon: isPemasukan
-                                    ? Icons.arrow_downward
-                                    : Icons.arrow_upward,
-                                iconColor: isPemasukan
-                                    ? Colors.green
-                                    : Colors.red,
-                                textColor: isPemasukan
-                                    ? Colors.green
-                                    : Colors.red,
-                                exerciseName: item['sumber'] ?? "-",
-                                numberOfExercises:
-                                    "${NumberFormat('#,##0', 'id_ID').format(jumlah)}",
-                                tanggalJamKecil: formattedDate,
-                              );
-                            },
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Transaksi",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
                           ),
                         ),
+                        Icon(Icons.more_horiz),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+
+                    /// List Transaksi atau Kosong
+                    Obx(
+                      () => Expanded(
+                        child: controller.semuaData.isEmpty
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.receipt_long,
+                                    size: 60,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 12),
+                                  Text(
+                                    "Transaksi tidak ada",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : ListView.builder(
+                                itemCount: controller.semuaData.length,
+                                itemBuilder: (context, index) {
+                                  final item = controller.semuaData[index];
+                                  final tanggal =
+                                      (item['tanggal_jam'] as Timestamp)
+                                          .toDate();
+                                  final isPemasukan =
+                                      item['jenis'] == 'pemasukan';
+                                  final jumlah = (item['jumlah'] ?? 0) as num;
+                                  final formattedDate = DateFormat(
+                                    'dd MMM yyyy, HH:mm',
+                                  ).format(tanggal);
+
+                                  return ExericaseTile(
+                                    icon: isPemasukan
+                                        ? Icons.arrow_downward
+                                        : Icons.arrow_upward,
+                                    iconColor: isPemasukan
+                                        ? Colors.green
+                                        : Colors.red,
+                                    textColor: isPemasukan
+                                        ? Colors.green
+                                        : Colors.red,
+                                    exerciseName: item['sumber'] ?? "-",
+                                    numberOfExercises:
+                                        "${NumberFormat('#,##0', 'id_ID').format(jumlah)}",
+                                    tanggalJamKecil: formattedDate,
+                                  );
+                                },
+                              ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -273,10 +226,42 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
+  Widget buildSummaryCard({
+    required String title,
+    required Color color,
+    required RxInt value,
+  }) {
+    return Expanded(
+      child: Container(
+        height: 80,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(title, style: TextStyle(color: color, fontSize: 10)),
+              SizedBox(height: 10),
+              Obx(() => Text("Rp ${formatJT(value.value)}")),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   String formatJT(int angka) {
     if (angka >= 1000000) {
       final jt = (angka / 1000000);
-
       return '${jt.toStringAsFixed(jt.truncateToDouble() == jt ? 0 : 1)} JT';
     } else {
       return NumberFormat('#,##0', 'id_ID').format(angka);

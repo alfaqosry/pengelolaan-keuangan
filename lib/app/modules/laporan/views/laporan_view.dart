@@ -114,15 +114,26 @@ class LaporanView extends GetView<LaporanController> {
           children: [
             Text(
               label,
-              style: TextStyle(color: color, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              _formatUang(value),
               style: TextStyle(
                 color: color,
+                fontWeight: FontWeight.bold,
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                _formatUang(value),
+                style: TextStyle(
+                  color: color,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -132,9 +143,10 @@ class LaporanView extends GetView<LaporanController> {
   }
 
   String _formatUang(int angka) {
-    if (angka >= 1000000) {
-      final jt = (angka / 1000000).toStringAsFixed(0);
-      return '$jt JT';
+    if (angka >= 1000000000) {
+      return '${(angka / 1000000000).toStringAsFixed(1)} M';
+    } else if (angka >= 1000000) {
+      return '${(angka / 1000000).toStringAsFixed(1)} JT';
     } else {
       return NumberFormat.currency(
         locale: 'id_ID',

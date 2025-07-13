@@ -10,6 +10,7 @@ class CreatePendapatanController extends GetxController {
   TextEditingController jumlahC = TextEditingController();
   TextEditingController sumberC = TextEditingController();
   TextEditingController keteranganC = TextEditingController();
+  TextEditingController kategoriC = TextEditingController();
 
   var selectedTime = TimeOfDay.now().obs;
   var tanggal = DateTime.now().obs;
@@ -74,6 +75,7 @@ class CreatePendapatanController extends GetxController {
             'jenis': 'pemasukan',
             'sumber': sumberC.text,
             'jumlah': int.parse(jumlahC.text),
+            'kategori': kategoriC.text,
             'tanggal_jam': Timestamp.fromDate(fullDateTime),
             'keterangan': keteranganC.text.isEmpty ? null : keteranganC.text,
             'created_at': FieldValue.serverTimestamp(),
@@ -84,6 +86,7 @@ class CreatePendapatanController extends GetxController {
 
       sumberC.clear();
       jumlahC.clear();
+      kategoriC.clear();
       keteranganC.clear();
     } catch (e) {
       Get.snackbar("Error", "Gagal menyimpan data: $e");

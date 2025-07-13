@@ -3,11 +3,14 @@ import 'package:get/get.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:keuangan/app/controllers/navigation_controller.dart';
 import 'package:keuangan/app/routes/app_pages.dart';
+import 'package:keuangan/app/widgets/main_navigation.dart';
+import 'package:keuangan/main.dart';
 
 class IsiProfileController extends GetxController {
   final RxInt currentIndex = 0.obs;
-
+  final navC = Get.find<NavigationController>();
   final pertanyaanList = [
     {
       'teks': 'Apakah kamu tinggal di kos?',
@@ -61,7 +64,10 @@ class IsiProfileController extends GetxController {
         title: "Berhasil",
         middleText: "Data berhasil disimpan ke Firestore!",
         confirm: ElevatedButton(
-          onPressed: () => Routes.HOME,
+          onPressed: () {
+            Get.back(); // Tutup dialog
+            Get.offAll(() => MyApp());
+          },
           child: Text("Oke"),
         ),
       );

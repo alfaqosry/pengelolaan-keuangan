@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:keuangan/app/controllers/auth_controller.dart';
 import 'package:keuangan/app/routes/app_pages.dart';
-
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
   final authC = Get.find<AuthController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,8 +40,6 @@ class LoginView extends GetView<LoginController> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Password TextField with Obx
               Obx(
                 () => TextField(
                   controller: controller.passC,
@@ -71,30 +68,55 @@ class LoginView extends GetView<LoginController> {
                 ),
               ),
               SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity, // Tombol melebar penuh
-                child: ElevatedButton(
-                  onPressed: () => authC.login(
-                    controller.emailC.text,
-                    controller.passC.text,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 14,
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : () async {
+                            if (controller.emailC.text.isEmpty ||
+                                controller.passC.text.isEmpty) {
+                              Get.snackbar(
+                                "Peringatan",
+                                "Email dan Password tidak boleh kosong",
+                              );
+                              return;
+                            }
+                            controller.setLoading(true);
+                            await authC.login(
+                              controller.emailC.text,
+                              controller.passC.text,
+                            );
+                            controller.setLoading(false);
+                          },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 14,
+                      ),
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    child: controller.isLoading.value
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            "Login",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
               ),

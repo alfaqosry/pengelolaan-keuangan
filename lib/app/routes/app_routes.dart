@@ -11,6 +11,8 @@ abstract class Routes {
   static const LAPORAN = _Paths.LAPORAN;
   static const CREATE_PENGELUARAN = _Paths.CREATE_PENGELUARAN;
   static const CREATE_PENDAPATAN = _Paths.CREATE_PENDAPATAN;
+  static const ALOKASI = _Paths.ALOKASI;
+  static const CREATE_ALOKASI = _Paths.CREATE_ALOKASI;
 }
 
 abstract class _Paths {
@@ -23,4 +25,6 @@ abstract class _Paths {
   static const LAPORAN = '/laporan';
   static const CREATE_PENGELUARAN = '/create-pengeluaran';
   static const CREATE_PENDAPATAN = '/create-pendapatan';
+  static const ALOKASI = '/alokasi';
+  static const CREATE_ALOKASI = '/create-alokasi';
 }

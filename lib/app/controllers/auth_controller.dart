@@ -4,41 +4,37 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:keuangan/app/routes/app_pages.dart';
 
 class AuthController extends GetxController {
-  FirebaseAuth auth = FirebaseAuth.instance;
-  FirebaseFirestore fireStore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
   Stream<User?> get streameAuthStatus => auth.authStateChanges();
 
-  void login(String email, String password) async {
+  /// LOGIN
+  Future<void> login(String email, String password) async {
     try {
       UserCredential myUser = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      User? datauser = myUser.user;
-      await datauser?.reload();
+      User? user = myUser.user;
+      await user?.reload();
 
-      if (datauser != null && datauser.emailVerified) {
-        DocumentReference userRef = fireStore
-            .collection('users')
-            .doc(datauser.uid);
-        DocumentSnapshot userDoc = await userRef.get();
+      if (user != null && user.emailVerified) {
+        final userRef = fireStore.collection('users').doc(user.uid);
+        final userDoc = await userRef.get();
 
-        // Buat dokumen jika belum ada
+        // Jika belum ada dokumen user, buat
         if (!userDoc.exists) {
           await userRef.set({
-            'email': datauser.email,
+            'email': user.email,
             'tinggal': null,
             'created_at': DateTime.now().toIso8601String(),
           });
-
-          // Perbarui userDoc setelah dibuat
-          userDoc = await userRef.get();
         }
 
-        // ✅ Setelah proses selesai, biarkan `main.dart` yang arahkan halaman
-        // jadi kita tidak melakukan Get.offAll() apapun di sini
+        final route = Routes.HOME;
+        Get.offAllNamed(route);
       } else {
         Get.defaultDialog(
           title: "Verifikasi Email",
@@ -58,11 +54,13 @@ class AuthController extends GetxController {
     }
   }
 
+  /// LOGOUT
   void logout() async {
     await auth.signOut();
     Get.offAllNamed(Routes.LOGIN);
   }
 
+  /// SIGNUP
   void signup(String name, String email, String password) async {
     try {
       UserCredential myUser = await auth.createUserWithEmailAndPassword(
@@ -81,12 +79,13 @@ class AuthController extends GetxController {
       });
 
       await myUser.user?.sendEmailVerification();
+
       Get.defaultDialog(
         title: "Verifikasi Email",
         middleText: "Kami telah mengirimkan email verifikasi ke $email",
         onConfirm: () {
-          Get.back();
-          Get.back();
+          Get.back(); // tutup dialog
+          Get.back(); // kembali ke halaman sebelumnya
         },
       );
     } on FirebaseAuthException catch (e) {
@@ -94,35 +93,6 @@ class AuthController extends GetxController {
         title: "Registrasi Gagal",
         middleText: e.message ?? "Terjadi kesalahan saat mendaftar",
       );
-    }
-  }
-
-  Future<String> determineStartRoute(User user) async {
-    try {
-      final doc = await fireStore.collection('users').doc(user.uid).get();
-
-      // Cek apakah user doc ada
-      if (!doc.exists) {
-        return Routes.ISI_PROFILE;
-      }
-
-      // Cek apakah user sudah punya isian di subcollection 'jawaban_user'
-      final jawabanSnapshot = await fireStore
-          .collection('users')
-          .doc(user.uid)
-          .collection('jawaban_user')
-          .get();
-
-      final sudahIsiProfil = jawabanSnapshot.docs.isNotEmpty;
-
-      if (sudahIsiProfil) {
-        return Routes.HOME; // Dashboard
-      } else {
-        return Routes.ISI_PROFILE;
-      }
-    } catch (e) {
-      print("Error cek Firestore: $e");
-      return Routes.LOGIN; // fallback kalau error
     }
   }
 }

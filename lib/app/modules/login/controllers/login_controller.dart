@@ -12,6 +12,10 @@ class LoginController extends GetxController {
     obscurePassword.value = !obscurePassword.value;
   }
 
+  void setLoading(bool value) {
+    isLoading.value = value;
+  }
+
   @override
   void onClose() {
     emailC.dispose();

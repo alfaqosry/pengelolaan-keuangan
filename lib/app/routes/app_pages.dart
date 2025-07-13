@@ -1,6 +1,10 @@
 import 'package:get/get.dart';
 
 import '../controllers/navigation_controller.dart';
+import '../modules/alokasi/bindings/alokasi_binding.dart';
+import '../modules/alokasi/views/alokasi_view.dart';
+import '../modules/create_alokasi/bindings/create_alokasi_binding.dart';
+import '../modules/create_alokasi/views/create_alokasi_view.dart';
 import '../modules/create_pendapatan/bindings/create_pendapatan_binding.dart';
 import '../modules/create_pendapatan/views/create_pendapatan_view.dart';
 import '../modules/create_pengeluaran/bindings/create_pengeluaran_binding.dart';
@@ -70,6 +74,16 @@ class AppPages {
       name: _Paths.CREATE_PENDAPATAN,
       page: () => const CreatePendapatanView(),
       binding: CreatePendapatanBinding(),
+    ),
+    GetPage(
+      name: _Paths.ALOKASI,
+      page: () => const AlokasiView(),
+      binding: AlokasiBinding(),
+    ),
+    GetPage(
+      name: _Paths.CREATE_ALOKASI,
+      page: () => const CreateAlokasiView(),
+      binding: CreateAlokasiBinding(),
     ),
   ];
 }
