@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class HomeController extends GetxController {
   // Nama user dari Firestore
   final namaUser = ''.obs;
-
+  final isLoading = true.obs;
   // Data user dari FirebaseAuth
   final user = Rxn<User>();
 
@@ -89,6 +89,7 @@ class HomeController extends GetxController {
 
           semuaData.value = gabungSemua;
           daftarPemasukan.value = pemasukan; // jika ingin tampil terpisah
+          isLoading.value = false;
         });
   }
 

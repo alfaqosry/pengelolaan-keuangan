@@ -13,6 +13,7 @@ abstract class Routes {
   static const CREATE_PENDAPATAN = _Paths.CREATE_PENDAPATAN;
   static const ALOKASI = _Paths.ALOKASI;
   static const CREATE_ALOKASI = _Paths.CREATE_ALOKASI;
+  static const EDIT_PROFILE = _Paths.EDIT_PROFILE;
 }
 
 abstract class _Paths {
@@ -27,4 +28,5 @@ abstract class _Paths {
   static const CREATE_PENDAPATAN = '/create-pendapatan';
   static const ALOKASI = '/alokasi';
   static const CREATE_ALOKASI = '/create-alokasi';
+  static const EDIT_PROFILE = '/edit-profile';
 }

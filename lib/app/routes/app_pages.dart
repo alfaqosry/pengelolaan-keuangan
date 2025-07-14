@@ -9,6 +9,8 @@ import '../modules/create_pendapatan/bindings/create_pendapatan_binding.dart';
 import '../modules/create_pendapatan/views/create_pendapatan_view.dart';
 import '../modules/create_pengeluaran/bindings/create_pengeluaran_binding.dart';
 import '../modules/create_pengeluaran/views/create_pengeluaran_view.dart';
+import '../modules/edit_profile/bindings/edit_profile_binding.dart';
+import '../modules/edit_profile/views/edit_profile_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/controllers/home_controller.dart';
 import '../modules/home/views/home_view.dart';
@@ -57,7 +59,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.PROFILE,
-      page: () => const ProfileView(),
+      page: () => ProfileView(),
       binding: ProfileBinding(),
     ),
     GetPage(
@@ -84,6 +86,11 @@ class AppPages {
       name: _Paths.CREATE_ALOKASI,
       page: () => const CreateAlokasiView(),
       binding: CreateAlokasiBinding(),
+    ),
+    GetPage(
+      name: _Paths.EDIT_PROFILE,
+      page: () => const EditProfileView(),
+      binding: EditProfileBinding(),
     ),
   ];
 }

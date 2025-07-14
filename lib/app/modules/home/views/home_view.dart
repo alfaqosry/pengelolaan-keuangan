@@ -7,6 +7,7 @@ import 'package:keuangan/app/controllers/auth_controller.dart';
 import 'package:keuangan/app/routes/app_pages.dart';
 import 'package:keuangan/app/utils/exericase_tile.dart';
 import '../controllers/home_controller.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeView extends GetView<HomeController> {
   final authC = Get.find<AuthController>();
@@ -164,7 +165,12 @@ class HomeView extends GetView<HomeController> {
                     /// List Transaksi atau Kosong
                     Obx(
                       () => Expanded(
-                        child: controller.semuaData.isEmpty
+                        child: controller.isLoading.value
+                            ? ListView.builder(
+                                itemCount: 5,
+                                itemBuilder: (context, index) => shimmerTile(),
+                              )
+                            : controller.semuaData.isEmpty
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -221,6 +227,23 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget shimmerTile() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: Container(
+          height: 70,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       ),
     );
