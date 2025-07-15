@@ -3,26 +3,24 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeController extends GetxController {
-  // Nama user dari Firestore
   final namaUser = ''.obs;
   final isLoading = true.obs;
-  // Data user dari FirebaseAuth
   final user = Rxn<User>();
-
-  // Daftar data keuangan (pemasukan + pengeluaran)
   final semuaData = <Map<String, dynamic>>[].obs;
-
-  // Khusus daftar pemasukan saja (opsional)
   final daftarPemasukan = <Map<String, dynamic>>[].obs;
-
-  // Total pemasukan dan pengeluaran
   final totalPemasukan = 0.obs;
   final totalPengeluaran = 0.obs;
-
-  // Getter saldo akhir (pemasukan - pengeluaran)
   int get saldoAkhir => totalPemasukan.value - totalPengeluaran.value;
+  var selectedFilter = 'Semua'.obs;
+  List<Map<String, dynamic>> get filteredData {
+    if (selectedFilter.value == 'Semua') {
+      return semuaData;
+    }
+    return semuaData
+        .where((e) => e['jenis'] == selectedFilter.value.toLowerCase())
+        .toList();
+  }
 
-  /// Mengambil nama user dari Firestore
   void ambilNamaDariFirestore() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;

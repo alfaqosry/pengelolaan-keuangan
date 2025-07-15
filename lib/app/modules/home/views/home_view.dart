@@ -147,8 +147,8 @@ class HomeView extends GetView<HomeController> {
                 padding: EdgeInsets.all(25),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           "Transaksi",
@@ -157,9 +157,47 @@ class HomeView extends GetView<HomeController> {
                             fontSize: 20,
                           ),
                         ),
-                        Icon(Icons.more_horiz),
+                        SizedBox(height: 12),
+                        Obx(
+                          () => SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: ['Semua', 'Pemasukan', 'Pengeluaran']
+                                  .map(
+                                    (filter) => Padding(
+                                      padding: const EdgeInsets.only(
+                                        right: 8.0,
+                                      ),
+                                      child: ChoiceChip(
+                                        label: Text(filter),
+                                        selected:
+                                            controller.selectedFilter.value ==
+                                            filter,
+                                        onSelected: (selected) {
+                                          if (selected) {
+                                            controller.selectedFilter.value =
+                                                filter;
+                                          }
+                                        },
+                                        selectedColor: Color(0xFF8FAEBB),
+                                        backgroundColor: Colors.grey[200],
+                                        labelStyle: TextStyle(
+                                          color:
+                                              controller.selectedFilter.value ==
+                                                  filter
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
+
                     SizedBox(height: 20),
 
                     /// List Transaksi atau Kosong
@@ -170,7 +208,7 @@ class HomeView extends GetView<HomeController> {
                                 itemCount: 5,
                                 itemBuilder: (context, index) => shimmerTile(),
                               )
-                            : controller.semuaData.isEmpty
+                            : controller.filteredData.isEmpty
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -190,9 +228,9 @@ class HomeView extends GetView<HomeController> {
                                 ],
                               )
                             : ListView.builder(
-                                itemCount: controller.semuaData.length,
+                                itemCount: controller.filteredData.length,
                                 itemBuilder: (context, index) {
-                                  final item = controller.semuaData[index];
+                                  final item = controller.filteredData[index];
                                   final tanggal =
                                       (item['tanggal_jam'] as Timestamp)
                                           .toDate();
