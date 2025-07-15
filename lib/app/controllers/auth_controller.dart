@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:keuangan/app/routes/app_pages.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:keuangan/app/routes/app_pages.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -11,12 +10,13 @@ class AuthController extends GetxController {
 
   Stream<User?> get streameAuthStatus => auth.authStateChanges();
 
+  /// GOOGLE SIGN-IN
   Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       if (googleUser == null) {
-        Get.snackbar("Gagal", "Login dibatalkan");
+        Get.snackbar("Gagal", "Login dibatalkan oleh pengguna");
         return;
       }
 
@@ -29,52 +29,46 @@ class AuthController extends GetxController {
       );
 
       final userCredential = await auth.signInWithCredential(credential);
+      final user = userCredential.user;
 
-      // Cek apakah user baru
+      if (user == null) {
+        Get.snackbar("Gagal", "User tidak ditemukan setelah login.");
+        return;
+      }
+
       final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
 
       if (isNewUser) {
-        // Tambahkan ke Firestore
-        await FirebaseFirestore.instance
-            .collection("users")
-            .doc(userCredential.user!.uid)
-            .set({
-              "uid": userCredential.user!.uid,
-              "email": userCredential.user!.email,
-              "name": userCredential.user!.displayName,
-              "photoUrl": userCredential.user!.photoURL,
-              "createdAt": DateTime.now(),
-            });
+        await fireStore.collection("users").doc(user.uid).set({
+          "uid": user.uid,
+          "email": user.email,
+          "name": user.displayName,
+          "photoUrl": user.photoURL,
+          "createdAt": DateTime.now(),
+        });
       }
 
-      Get.offAllNamed('/main'); // arahkan ke beranda
+      Get.offAllNamed(Routes.HOME);
     } catch (e) {
       Get.snackbar("Error", "Gagal login dengan Google: $e");
     }
   }
 
-  Future<void> logout() async {
-    await auth.signOut();
-    await GoogleSignIn().signOut();
-    Get.offAllNamed(Routes.LOGIN);
-  }
-
-  /// LOGIN
+  /// EMAIL LOGIN
   Future<void> login(String email, String password) async {
     try {
-      UserCredential myUser = await auth.signInWithEmailAndPassword(
+      final userCredential = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      User? user = myUser.user;
+      final user = userCredential.user;
       await user?.reload();
 
       if (user != null && user.emailVerified) {
         final userRef = fireStore.collection('users').doc(user.uid);
         final userDoc = await userRef.get();
 
-        // Jika belum ada dokumen user, buat
         if (!userDoc.exists) {
           await userRef.set({
             'email': user.email,
@@ -83,8 +77,7 @@ class AuthController extends GetxController {
           });
         }
 
-        final route = Routes.HOME;
-        Get.offAllNamed(route);
+        Get.offAllNamed(Routes.HOME);
       } else {
         Get.defaultDialog(
           title: "Verifikasi Email",
@@ -105,35 +98,43 @@ class AuthController extends GetxController {
   }
 
   /// LOGOUT
+  Future<void> logout() async {
+    await auth.signOut();
+    await GoogleSignIn().signOut();
+    Get.offAllNamed(Routes.LOGIN);
+  }
 
-  /// SIGNUP
+  /// EMAIL SIGN-UP
   Future<void> signup(String name, String email, String password) async {
     try {
-      UserCredential myUser = await auth.createUserWithEmailAndPassword(
+      final userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      await myUser.user?.updateDisplayName(name);
-      await myUser.user?.reload();
+      final user = userCredential.user;
+      await user?.updateDisplayName(name);
+      await user?.reload();
 
-      await fireStore.collection('users').doc(myUser.user!.uid).set({
-        'email': email,
-        'displayName': name,
-        'tinggal': null,
-        'created_at': DateTime.now().toIso8601String(),
-      });
+      if (user != null) {
+        await fireStore.collection('users').doc(user.uid).set({
+          'email': email,
+          'displayName': name,
+          'tinggal': null,
+          'created_at': DateTime.now().toIso8601String(),
+        });
 
-      await myUser.user?.sendEmailVerification();
+        await user.sendEmailVerification();
 
-      Get.defaultDialog(
-        title: "Verifikasi Email",
-        middleText: "Kami telah mengirimkan email verifikasi ke $email",
-        onConfirm: () {
-          Get.back(); // tutup dialog
-          Get.back(); // kembali ke halaman sebelumnya
-        },
-      );
+        Get.defaultDialog(
+          title: "Verifikasi Email",
+          middleText: "Kami telah mengirimkan email verifikasi ke $email",
+          onConfirm: () {
+            Get.back(); // tutup dialog
+            Get.back(); // kembali ke halaman sebelumnya
+          },
+        );
+      }
     } on FirebaseAuthException catch (e) {
       Get.defaultDialog(
         title: "Registrasi Gagal",
