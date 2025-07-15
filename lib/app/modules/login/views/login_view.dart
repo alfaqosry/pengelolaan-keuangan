@@ -130,6 +130,24 @@ class LoginView extends GetView<LoginController> {
                   ),
                 ],
               ),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => authC.signInWithGoogle(),
+                  icon: Image.asset(
+                    "assets/google.png",
+                    width: 24,
+                  ), // pastikan ikon ada
+                  label: Text("Masuk dengan Google"),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: BorderSide(color: Colors.grey),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

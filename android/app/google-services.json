@@ -12,7 +12,20 @@
           "package_name": "com.adam.keuangan"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "421661021556-hev4qnm1ohf8154m7pk66p36vs1s0jbb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.adam.keuangan",
+            "certificate_hash": "4bf681fe5797e659aaaef07a88457f73cfcdf888"
+          }
+        },
+        {
+          "client_id": "421661021556-m060g37qqvoepacg74t270inub2re061.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCjsXy4hDnX8eREv9eMECD5L9Y2POM76v4"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "421661021556-m060g37qqvoepacg74t270inub2re061.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

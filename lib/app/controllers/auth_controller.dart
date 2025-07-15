@@ -2,12 +2,62 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:keuangan/app/routes/app_pages.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
   Stream<User?> get streameAuthStatus => auth.authStateChanges();
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        Get.snackbar("Gagal", "Login dibatalkan");
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential = await auth.signInWithCredential(credential);
+
+      // Cek apakah user baru
+      final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+
+      if (isNewUser) {
+        // Tambahkan ke Firestore
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(userCredential.user!.uid)
+            .set({
+              "uid": userCredential.user!.uid,
+              "email": userCredential.user!.email,
+              "name": userCredential.user!.displayName,
+              "photoUrl": userCredential.user!.photoURL,
+              "createdAt": DateTime.now(),
+            });
+      }
+
+      Get.offAllNamed('/main'); // arahkan ke beranda
+    } catch (e) {
+      Get.snackbar("Error", "Gagal login dengan Google: $e");
+    }
+  }
+
+  Future<void> logout() async {
+    await auth.signOut();
+    await GoogleSignIn().signOut();
+    Get.offAllNamed(Routes.LOGIN);
+  }
 
   /// LOGIN
   Future<void> login(String email, String password) async {
@@ -55,10 +105,6 @@ class AuthController extends GetxController {
   }
 
   /// LOGOUT
-  void logout() async {
-    await auth.signOut();
-    Get.offAllNamed(Routes.LOGIN);
-  }
 
   /// SIGNUP
   Future<void> signup(String name, String email, String password) async {
