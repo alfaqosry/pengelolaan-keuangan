@@ -255,6 +255,7 @@ class HomeView extends GetView<HomeController> {
                                     numberOfExercises:
                                         "${NumberFormat('#,##0', 'id_ID').format(jumlah)}",
                                     tanggalJamKecil: formattedDate,
+                                    kategori: item['kategori'],
                                   );
                                 },
                               ),
