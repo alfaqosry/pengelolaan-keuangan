@@ -45,7 +45,15 @@ class HomeView extends GetView<HomeController> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  CircleAvatar(backgroundColor: Colors.white),
+                  CircleAvatar(
+                    backgroundColor: Colors.white,
+                    backgroundImage: authC.auth.currentUser?.photoURL != null
+                        ? NetworkImage(authC.auth.currentUser!.photoURL!)
+                        : null,
+                    child: authC.auth.currentUser?.photoURL == null
+                        ? Icon(Icons.person, color: Colors.grey)
+                        : null,
+                  ),
                   SizedBox(width: 14),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

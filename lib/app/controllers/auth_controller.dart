@@ -42,7 +42,7 @@ class AuthController extends GetxController {
         await fireStore.collection("users").doc(user.uid).set({
           "uid": user.uid,
           "email": user.email,
-          "name": user.displayName,
+          "displayName": user.displayName,
           "photoUrl": user.photoURL,
           "createdAt": DateTime.now(),
         });

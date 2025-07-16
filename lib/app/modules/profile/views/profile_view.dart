@@ -31,8 +31,14 @@ class ProfileView extends StatelessWidget {
                 CircleAvatar(
                   radius: 45,
                   backgroundColor: Colors.white,
-                  child: Icon(Icons.person, size: 50, color: Colors.grey),
+                  backgroundImage: user?.photoURL != null
+                      ? NetworkImage(user!.photoURL!)
+                      : null,
+                  child: user?.photoURL == null
+                      ? Icon(Icons.person, color: Colors.grey)
+                      : null,
                 ),
+
                 const SizedBox(height: 12),
                 Text(
                   user?.displayName ?? 'Nama Pengguna',
@@ -76,16 +82,18 @@ class ProfileView extends StatelessWidget {
                   icon: Icons.info,
                   title: 'Tentang Aplikasi',
                   onTap: () {
-                    Get.dialog(AlertDialog(
-                      title: Text("Tentang Aplikasi"),
-                      content: Text("Aplikasi Keuangan Mahasiswa v1.0.0"),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Get.back(),
-                          child: Text("Tutup"),
-                        ),
-                      ],
-                    ));
+                    Get.dialog(
+                      AlertDialog(
+                        title: Text("Tentang Aplikasi"),
+                        content: Text("Aplikasi Keuangan Mahasiswa v1.0.0"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Get.back(),
+                            child: Text("Tutup"),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                 ),
                 const Divider(),
@@ -121,20 +129,20 @@ class ProfileView extends StatelessWidget {
     required VoidCallback onTap,
     Color color = Colors.black87,
   }) {
-   return Container(
-  margin: const EdgeInsets.only(bottom: 12),
-  decoration: BoxDecoration(
-    color: Colors.white, // atau samakan dengan background utama
-    borderRadius: BorderRadius.circular(12),
-    border: Border.all(color: Colors.transparent), // tanpa border
-  ),
-  child: ListTile(
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-    leading: Icon(icon, color: color),
-    title: Text(title, style: TextStyle(color: color)),
-    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-    onTap: onTap,
-  ),
-);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white, // atau samakan dengan background utama
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.transparent), // tanpa border
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        leading: Icon(icon, color: color),
+        title: Text(title, style: TextStyle(color: color)),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: onTap,
+      ),
+    );
   }
 }
