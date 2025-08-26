@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class LoginController extends GetxController {
   TextEditingController emailC = TextEditingController();
   TextEditingController passC = TextEditingController();
+  TextEditingController resetEmailC = TextEditingController();
 
   var obscurePassword = true.obs;
   var isLoading = false.obs;
@@ -20,6 +21,7 @@ class LoginController extends GetxController {
   void onClose() {
     emailC.dispose();
     passC.dispose();
+    resetEmailC.dispose();
     super.onClose();
   }
 }

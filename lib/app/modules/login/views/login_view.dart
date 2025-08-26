@@ -67,7 +67,87 @@ class LoginView extends GetView<LoginController> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Get.defaultDialog(
+                      title: "🔑 Lupa Password",
+                      titleStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.blueAccent,
+                      ),
+                      backgroundColor: Colors.white,
+                      radius: 12,
+                      contentPadding: EdgeInsets.all(16),
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Masukkan email anda untuk reset password.",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          SizedBox(height: 14),
+                          TextField(
+                            controller: controller.resetEmailC,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              labelText: "Email",
+                              prefixIcon: Icon(
+                                Icons.email,
+                                color: Colors.blueAccent,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.blueAccent,
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                            ),
+                          ),
+                        ],
+                      ),
+                      textConfirm: "Kirim",
+                      textCancel: "Batal",
+                      confirmTextColor: Colors.white,
+                      buttonColor: Colors.blueAccent,
+                      cancelTextColor: Colors.redAccent,
+                      onConfirm: () async {
+                        if (controller.resetEmailC.text.isNotEmpty) {
+                          await authC.resetPassword(
+                            controller.resetEmailC.text,
+                          );
+                          Get.back(); // tutup dialog
+                        } else {
+                          Get.snackbar(
+                            "Error",
+                            "Email tidak boleh kosong",
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.redAccent,
+                            colorText: Colors.white,
+                            margin: EdgeInsets.all(12),
+                            borderRadius: 10,
+                          );
+                        }
+                      },
+                    );
+                  },
+                  child: Text("Lupa Password?"),
+                ),
+              ),
+              SizedBox(height: 10),
               Obx(
                 () => SizedBox(
                   width: double.infinity,

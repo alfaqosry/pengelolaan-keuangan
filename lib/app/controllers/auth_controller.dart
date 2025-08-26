@@ -142,4 +142,13 @@ class AuthController extends GetxController {
       );
     }
   }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+      Get.snackbar("Berhasil", "Link reset password telah dikirim ke $email");
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar("Error", e.message ?? "Terjadi kesalahan");
+    }
+  }
 }

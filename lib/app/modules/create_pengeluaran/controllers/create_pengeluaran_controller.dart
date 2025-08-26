@@ -10,6 +10,8 @@ class CreatePengeluaranController extends GetxController {
   TextEditingController keteranganC = TextEditingController();
   TextEditingController kategoriC = TextEditingController();
 
+  var alokasiList = <Map<String, dynamic>>[].obs;
+
   // Waktu & tanggal
   var selectedTime = TimeOfDay.now().obs;
   var tanggal = DateTime.now().obs;
