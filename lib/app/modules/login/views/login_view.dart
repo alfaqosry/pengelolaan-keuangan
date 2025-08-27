@@ -82,6 +82,7 @@ class LoginView extends GetView<LoginController> {
                       backgroundColor: Colors.white,
                       radius: 12,
                       contentPadding: EdgeInsets.all(16),
+
                       content: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,

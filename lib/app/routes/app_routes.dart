@@ -14,6 +14,7 @@ abstract class Routes {
   static const ALOKASI = _Paths.ALOKASI;
   static const CREATE_ALOKASI = _Paths.CREATE_ALOKASI;
   static const EDIT_PROFILE = _Paths.EDIT_PROFILE;
+  static const GANTIPASSWORD = _Paths.GANTIPASSWORD;
 }
 
 abstract class _Paths {
@@ -29,4 +30,5 @@ abstract class _Paths {
   static const ALOKASI = '/alokasi';
   static const CREATE_ALOKASI = '/create-alokasi';
   static const EDIT_PROFILE = '/edit-profile';
+  static const GANTIPASSWORD = '/gantipassword';
 }

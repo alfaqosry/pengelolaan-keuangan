@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:keuangan/app/routes/app_pages.dart';
 
 class ProfileView extends StatelessWidget {
   final user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
+    // Cek apakah user login dengan email/password
+    bool canChangePassword =
+        user?.providerData.any((p) => p.providerId == 'password') ?? false;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Profil'),
@@ -38,7 +43,6 @@ class ProfileView extends StatelessWidget {
                       ? Icon(Icons.person, color: Colors.grey)
                       : null,
                 ),
-
                 const SizedBox(height: 12),
                 Text(
                   user?.displayName ?? 'Nama Pengguna',
@@ -56,10 +60,7 @@ class ProfileView extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 20),
-
-          // Menu Berjajar
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -68,16 +69,18 @@ class ProfileView extends StatelessWidget {
                   icon: Icons.edit,
                   title: 'Edit Profil',
                   onTap: () {
-                    // TODO: Arahkan ke halaman edit profil
+                    Get.toNamed(Routes.EDIT_PROFILE);
                   },
                 ),
-                _buildMenuItem(
-                  icon: Icons.lock,
-                  title: 'Ganti Password',
-                  onTap: () {
-                    // TODO: Arahkan ke halaman ganti password
-                  },
-                ),
+                // Hanya tampilkan jika user login dengan email/password
+                if (canChangePassword)
+                  _buildMenuItem(
+                    icon: Icons.lock,
+                    title: 'Ganti Password',
+                    onTap: () {
+                      Get.toNamed(Routes.GANTIPASSWORD);
+                    },
+                  ),
                 _buildMenuItem(
                   icon: Icons.info,
                   title: 'Tentang Aplikasi',
@@ -101,18 +104,9 @@ class ProfileView extends StatelessWidget {
                   icon: Icons.logout,
                   title: 'Keluar',
                   color: Colors.red,
-                  onTap: () {
-                    Get.defaultDialog(
-                      title: "Konfirmasi",
-                      middleText: "Yakin ingin keluar?",
-                      textConfirm: "Ya",
-                      textCancel: "Batal",
-                      confirmTextColor: Colors.white,
-                      onConfirm: () async {
-                        await FirebaseAuth.instance.signOut();
-                        Get.offAllNamed('/login');
-                      },
-                    );
+                  onTap: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Get.offAllNamed('/login');
                   },
                 ),
               ],
@@ -132,9 +126,8 @@ class ProfileView extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white, // atau samakan dengan background utama
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.transparent), // tanpa border
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),

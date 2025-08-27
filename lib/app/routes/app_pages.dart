@@ -11,6 +11,8 @@ import '../modules/create_pengeluaran/bindings/create_pengeluaran_binding.dart';
 import '../modules/create_pengeluaran/views/create_pengeluaran_view.dart';
 import '../modules/edit_profile/bindings/edit_profile_binding.dart';
 import '../modules/edit_profile/views/edit_profile_view.dart';
+import '../modules/gantipassword/bindings/gantipassword_binding.dart';
+import '../modules/gantipassword/views/gantipassword_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/controllers/home_controller.dart';
 import '../modules/home/views/home_view.dart';
@@ -89,8 +91,13 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.EDIT_PROFILE,
-      page: () => const EditProfileView(),
+      page: () => EditProfileView(),
       binding: EditProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.GANTIPASSWORD,
+      page: () => const GantipasswordView(),
+      binding: GantipasswordBinding(),
     ),
   ];
 }
